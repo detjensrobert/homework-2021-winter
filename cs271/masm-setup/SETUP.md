@@ -61,7 +61,7 @@ https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html).
    wine_masm AddSub2.exe
    ```
 
-A Bash function to assemble, link, and run:
+A Bash script to assemble, link, and run a given `.masm` file:
 
 ```bash
 #!/bin/bash
@@ -70,24 +70,24 @@ set -e # Stop on errors
 # Get the path to the file without a .asm extension
 FILENAME="$(basename "$1")"
 EXTENSION="${FILENAME##*.}"
-shopt -s nocasematch   # String case-insensitive comparison
+shopt -s nocasematch # String case-insensitive comparison
 if [[ "$EXTENSION" = "asm" ]]; then
-    FILENAME="${FILENAME%.*}"   # Remove extension
+    FILENAME="${FILENAME%.*}" # Remove extension
 fi
-UNIX_PATH="$(dirname "$1")/$FILENAME"
-
-# Convert forwards slashes into backslashes
-WINDOWS_PATH=$(echo "$UNIX_PATH" | sed 's|/|\\|')
+FILEPATH="$(dirname "$1")/$FILENAME"
 
 shopt -s expand_aliases
-alias wine_masm="WINEARCH=win32 WINEPREFIX=~/.local/share/wineprefixes/masm/ wine"
+# WINEDEBUG flag hides the fixme:ntdll:NtQuerySystemInformation warning (which can be safely ignored)
+alias wine_masm="WINEDEBUG=fixme-all WINEARCH=win32 WINEPREFIX=~/.local/share/wineprefixes/masm/ wine"
 
-echo "Assembling..."
-wine_masm ml -nologo -c -coff -Zi "$WINDOWS_PATH.asm"
+echo "> Assembling..."
+wine_masm ml -nologo -c -coff -Zi "$FILEPATH.asm"
 
-echo "Linking..."
-wine_masm link -nologo -subsystem:console -entry:main -libpath:'C:\Irvine' irvine32.lib kernel32.lib user32.lib "$WINDOWS_PATH.obj"
+echo "> Linking..."
+wine_masm link -nologo -subsystem:console -entry:main -libpath:'C:\Irvine' irvine32.lib kernel32.lib user32.lib "$FILEPATH.obj"
 
-echo "Running..."
-wine_masm "$WINDOWS_PATH.exe"
+echo "> Running..."
+echo
+wine_masm "$FILEPATH.exe"
+
 ```
