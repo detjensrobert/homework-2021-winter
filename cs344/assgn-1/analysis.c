@@ -26,8 +26,6 @@ void do_analysis(struct Movie *movies) {
 
     choice = main_menu();
   }
-
-  printf("You chose: %i\n", choice);
 }
 
 /*
