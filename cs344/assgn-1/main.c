@@ -10,8 +10,7 @@ int main(int argc, char *argv[]) {
   struct Movie *movies = movies_parse(filename);
   int count = movies_count(movies);
 
-  printf("Processed file %s and parsed data for %i movies\n", filename,
-         count);
+  printf("Processed file %s and parsed data for %i movies\n", filename, count);
 
   do_analysis(movies);
 

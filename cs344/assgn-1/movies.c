@@ -4,6 +4,9 @@
 
 #include "movies.h"
 
+/*
+ * Reads the given filename and creates a linked list of movies.
+ */
 struct Movie *movies_parse(char *filename) {
 
   FILE *infile = fopen(filename, "r");
@@ -40,6 +43,9 @@ struct Movie *movies_parse(char *filename) {
   return head;
 }
 
+/*
+ * Parses the passed line and creates a Movie struct
+ */
 struct Movie *movies_create(char *line) {
 
   struct Movie *m = malloc(sizeof(struct Movie));
@@ -77,6 +83,9 @@ struct Movie *movies_create(char *line) {
   return m;
 }
 
+/*
+ * Counts the number of movies in the given linked list
+ */
 int movies_count(struct Movie *movies) {
   int count = 0;
   struct Movie *walker = movies;
@@ -89,6 +98,9 @@ int movies_count(struct Movie *movies) {
   return count;
 }
 
+/*
+ * Frees the linked list
+ */
 void movies_delete(struct Movie *m) {
   struct Movie *next = NULL;
 
