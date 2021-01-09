@@ -61,7 +61,7 @@ https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html).
    wine_masm AddSub2.exe
    ```
 
-A Bash script to assemble, link, and run a given `.masm` file:
+A Bash script to assemble, link, and run a given `.asm` file:
 
 ```bash
 #!/bin/bash
