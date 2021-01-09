@@ -7,6 +7,5 @@
 Compiling and running this assignment:
 
 ```bash
-gcc -Wall --std=gnu99 -o movies main.c
-./movies 'path/to/movies/file.csv'
+make && ./movies 'path/to/movies/file.csv'
 ```
