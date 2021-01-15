@@ -1,4 +1,4 @@
-TITLE Program Template     (template.asm)
+TITLE CS 271 Assignment X (Robert Detjens)
 
 ; Author:                 Robert Detjens
 ; Last Modified:
@@ -11,11 +11,11 @@ INCLUDE Irvine32.inc
 
 ; (insert constant definitions here)
 
-.data
+.DATA
 
 ; (insert variable definitions here)
 
-.code
+.CODE
 main PROC
 
 ; (insert executable instructions here)

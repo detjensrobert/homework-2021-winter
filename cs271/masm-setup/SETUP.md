@@ -81,7 +81,13 @@ shopt -s expand_aliases
 alias wine_masm="WINEDEBUG=fixme-all WINEARCH=win32 WINEPREFIX=~/.local/share/wineprefixes/masm/ wine"
 
 echo "> Assembling..."
-wine_masm ml -nologo -c -coff -Zi "$FILEPATH.asm"
+ML="ml -nologo -c -coff -Zi $FILEPATH.asm"
+# ml does not output anything if run directly
+# if it fails, run in CMD to see errors (& trim out fluff)
+wine_masm $ML || (
+    echo $ML | wine_masm cmd | head -n -2 | tail -n +4
+    exit 1
+)
 
 echo "> Linking..."
 wine_masm link -nologo -subsystem:console -entry:main -libpath:'C:\Irvine' irvine32.lib kernel32.lib user32.lib "$FILEPATH.obj"
@@ -89,5 +95,4 @@ wine_masm link -nologo -subsystem:console -entry:main -libpath:'C:\Irvine' irvin
 echo "> Running..."
 echo
 wine_masm "$FILEPATH.exe"
-
 ```
