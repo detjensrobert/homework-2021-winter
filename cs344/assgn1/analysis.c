@@ -91,7 +91,7 @@ void show_highest_rated(struct Movie *movies) {
   int YEAR_MIN = 1900;
   int YEAR_MAX = 2021;
 
-  struct Movie **max_arr = calloc(sizeof(struct Movie *), YEAR_MAX - YEAR_MIN);
+  struct Movie **max_arr = calloc(sizeof(struct Movie *), YEAR_MAX - YEAR_MIN + 1);
 
   struct Movie *walker = movies;
   while (walker != NULL) {
@@ -105,7 +105,7 @@ void show_highest_rated(struct Movie *movies) {
     walker = walker->next;
   }
 
-  for (int i = 0; i < YEAR_MAX - YEAR_MIN; i++) {
+  for (int i = 0; i < YEAR_MAX - YEAR_MIN + 1; i++) {
     if (max_arr[i]) {
       printf("%i %.1f %s\n", max_arr[i]->year, max_arr[i]->rating,
              max_arr[i]->title);
