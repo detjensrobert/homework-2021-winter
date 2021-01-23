@@ -38,7 +38,7 @@ b. $P = 0.1$
 
 c. $P_{120}^n = \frac{120!}{n!(120-n)!} * 0.1^n(0.9)^{120-n}$
 
-d. $P_{120}^{21} = \frac{120!}{21!(120-21)!} * 0.1^{21}(0.9)^{120-21} = 0.00414$
+d. $\Sigma_{n=21}^{120} P_{120}^{n} = \Sigma_{n=21}^{120} (\frac{120!}{n!(120-n)!} * 0.1^{n}(0.9)^{120-n}) = 0.00794$
 
 ### 4. Consider a packet of length L that begins at end system A and travels over three links to a destination end system. What is the end-to-end delay?
 
@@ -56,7 +56,7 @@ $\pagebreak$
 
 $$d_{queue} = 4.5\frac{1500*8}{2*10^6} = 0.027s$$
 
-$$d_{queue} = (n + \frac{x}{L})\frac{L}{R}$$
+$$d_{queue} = (n + \frac{L - x}{L})\frac{L}{R}$$
 
 ### 7.
 
@@ -132,11 +132,11 @@ a. google.com (216.58.217.46): avg 19.166
 
    `ping n #` (or `ping -c #` on Linux) is the number of times to ping the host before exiting.
 
-b. Route reported by `mtr google.com`:
+b. 9 hops observed. The route:
 
 | Hop No | Source          | Dest            | RTT  |
 |--------|-----------------|-----------------|------|
-| 1      | *               | 192.168.0.1     | 0.2  |
+| 1      | 192.168.0.102   | 192.168.0.1     | 0.2  |
 | 2      | 192.168.0.1     | 10.4.0.1        | 0.4  |
 | 3      | 10.4.0.1        | 63.146.160.113  | 7.3  |
 | 4      | 63.146.160.13   | 64.14.41.154    | 12.2 |
@@ -146,4 +146,6 @@ b. Route reported by `mtr google.com`:
 | 8      | 108.170.245.113 | 74.125.253.67   | 14.6 |
 | 9      | 74.125.253.67   | 216.58.217.46   | 14.7 |
 
-c. It's the same ips as the above table.
+c. The first packet is from the local gateway `192.168.0.1` -- the first hop. Second machine is `10.4.0.1` -- the second hop.
+
+   ![](https://i.imgur.com/rCs9pgH.png)
