@@ -48,9 +48,9 @@ $$d_{end} = 2(0.003) + 3\frac{1500*8}{2*10^6} + \frac{5000*10^3 + 4000*10^3 + 10
 
 ### 5. In the above problem, suppose $R_1=R_2=R_3=R$, $d_{proc}=0$, and bits are transmitted as soon as they are recieved. What is the end-to-end delay?
 
-$$d_{end} = 3(\frac{L}{R}) + \sum_{i=1}^{3} \frac{d_i}{s_i}$$
+$$d_{end} = \frac{L}{R} + \sum_{i=1}^{3} \frac{d_i}{s_i}$$
 
-$\pagebreak$
+$$d_{end} = \frac{1500*8}{2*10^6} + \frac{5000*10^3 + 4000*10^3 + 1000*10^3}{2.5*10^8} = \bold{0.046s}$$
 
 ### 6. What is the queuing delay for the packet?  More generally, what is the queuing delay when all packets have length L, the transmission rate is R, x bits of the currently-being-transmitted packethave been transmitted, and n packets are already in the queue?
 
