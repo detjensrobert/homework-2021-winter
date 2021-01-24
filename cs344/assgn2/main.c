@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "movies.h"
+#include "process.h"
 #include "select.h"
 
 int main_menu();
@@ -16,6 +17,8 @@ int main(int argc, char *argv[]) {
     printf("\nNow processing the chosen file named %s\n", filename);
 
     struct Movie *movies = movies_parse(filename);
+
+    process_movies(movies);
 
     movies_delete(movies);
     free(filename);

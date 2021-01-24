@@ -6,7 +6,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 
 #include "select.h"
 
@@ -65,10 +64,7 @@ int file_select_menu() {
 char *file_get_lgsm(DIR *dp, int want_largest) {
   char *filename = malloc(sizeof(char) * 256);
 
-  off_t filesize = 0;
-  if (!want_largest) {
-    filesize = LONG_MAX;
-  }
+  off_t filesize = want_largest ? 0 : LONG_MAX;
 
   struct dirent *entry;
   struct stat info;
@@ -117,7 +113,7 @@ char *file_get_user(DIR *dp) {
   struct stat info;
 
   printf("Enter the complete file name: ");
-  scanf("%s", filename);
+  scanf("%255s", filename);
 
   // if file does not exist, return NULL to reprompt
   if ((stat(filename, &info)) == -1) {
