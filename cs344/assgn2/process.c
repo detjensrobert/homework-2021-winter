@@ -24,7 +24,7 @@ int process_movies(struct Movie *movies) {
 
   struct Movie *walker = movies;
   while (walker != NULL) {
-    char* filename = malloc(sizeof(char) * 32);
+    char *filename = malloc(sizeof(char) * 32);
     sprintf(filename, "%s/%i.txt", dirname, walker->year);
 
     yearfile = fopen(filename, "a");

@@ -69,6 +69,7 @@ char *file_get_lgsm(DIR *dp, int want_largest) {
   struct dirent *entry;
   struct stat info;
 
+  // compile regex
   regex_t name_regex;
   if (regcomp(&name_regex, "^movies_.+\\.csv$", REG_EXTENDED)) {
     fprintf(stderr, "Could not compile regex!\n");
@@ -109,11 +110,17 @@ char *file_get_lgsm(DIR *dp, int want_largest) {
  */
 char *file_get_user(DIR *dp) {
 
+  // flush input buffer - weird looping with menu scanf otherwise
+  char c;
+  while ((c = getchar()) != '\n' && c != EOF) {
+  }
+
   char *filename = calloc(sizeof(char), 256);
   struct stat info;
 
   printf("Enter the complete file name: ");
-  scanf("%255s", filename);
+  fgets(filename, 255, stdin);
+  filename[strlen(filename) - 1] = '\0'; // remove trailing newline
 
   // if file does not exist, return NULL to reprompt
   if ((stat(filename, &info)) == -1) {
