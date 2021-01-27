@@ -8,6 +8,7 @@ TITLE CS 271 Assignment X (Robert Detjens)
 ; Description:
 
 INCLUDE Irvine32.inc
+INCLUDE Macros.inc
 
 ; (insert constant definitions here)
 
