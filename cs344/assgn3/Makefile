@@ -7,4 +7,4 @@ smallsh: $(wildcard *.c)
 	$(CC) $(ARGS) -o $(OUTFILE) $(wildcard *.c)
 
 clean:
-	rm -rf $(OUTFILE) junk junk2
+	rm -rf $(OUTFILE) junk junk2 $(wildcard vgcore.*)

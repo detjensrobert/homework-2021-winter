@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "debug.h"
 #include "parse.h"
@@ -11,19 +12,21 @@ struct Command *parse_command(char *line) {
   char *token = NULL;
   char *t_saveptr = NULL;
 
+  // replace all $$ with current pid
+  char pidstr[10];
+  sprintf(pidstr, "%i", getpid());
+  char *expandedline = string_replace(line, "$$", pidstr);
+
   // set defaults
-  cmd->args = NULL;
-  cmd->args_c = 0;
+  cmd->argv = calloc(2, sizeof(char *));
+  cmd->argc = 0;
   cmd->infile = NULL;
   cmd->outfile = NULL;
   cmd->bg = 0;
 
   // parse command as first arg
-  token = strtok_r(line, " ", &t_saveptr);
-  cmd->command = calloc(strlen(token) + 1, sizeof(char));
-  strcpy(cmd->command, token);
-
-  while ((token = strtok_r(NULL, " ", &t_saveptr))) {
+  token = strtok_r(expandedline, " ", &t_saveptr);
+  while (token) {
 
     switch (token[0]) {
     case '<': // input redirection
@@ -42,24 +45,28 @@ struct Command *parse_command(char *line) {
       cmd->bg = 1;
       break;
 
-    default:; // parse as arg
-      cmd->args = realloc(cmd->args, sizeof(char *) * (cmd->args_c + 1));
-      cmd->args[cmd->args_c] = malloc(sizeof(char) * (strlen(token) + 1));
-      strcpy(cmd->args[cmd->args_c], token);
-      cmd->args_c++;
+    default: // parse as arg
+      cmd->argv = realloc(cmd->argv, sizeof(char *) * (cmd->argc + 1));
+      cmd->argv[cmd->argc] = malloc(sizeof(char) * (strlen(token) + 1));
+      strcpy(cmd->argv[cmd->argc], token);
+      cmd->argc++;
     }
+
+    token = strtok_r(NULL, " ", &t_saveptr);
   }
 
+  free(expandedline);
+
+  cmd->command = cmd->argv[0];
   return cmd;
 }
 
 void free_command(struct Command *cmd) {
-  free(cmd->command);
-
-  for (int i = 0; i < cmd->args_c; i++) {
-    free(cmd->args[i]);
+  // free(cmd->command);
+  for (int i = 0; i < cmd->argc; i++) {
+    free(cmd->argv[i]);
   }
-  free(cmd->args);
+  free(cmd->argv);
   free(cmd->infile);
   free(cmd->outfile);
   free(cmd);
@@ -86,4 +93,42 @@ char *trim_whitespace(char *str) {
   strcpy(trimmed, str + start);
 
   return trimmed;
+}
+
+char *string_replace(char *str, char *from, char *to) {
+  char *substr_pos = str;
+
+  // count # of froms in str
+  int sub_count = 0;
+  int from_len = strlen(from);
+  while ((substr_pos = strstr(substr_pos, from))) {
+    sub_count++;
+    substr_pos += from_len; // avoid overlaps
+  }
+
+  // alloc new string with room for replacements
+  int len_diff = (strlen(to) - from_len);
+  char *replaced = calloc(strlen(str) + len_diff * sub_count + 1, sizeof(char));
+
+  if (sub_count) { // replace all instances of from with to
+    substr_pos = str;
+
+    while ((substr_pos = strstr(substr_pos, from))) {
+      // copy orig str up to `from`
+      strncat(replaced, str, (substr_pos - str));
+      strcat(replaced, to); // replace with `to`
+
+      substr_pos += from_len; // avoid overlaps
+      str = substr_pos;
+    }
+
+    if (str < str + strlen(str)) { // copy rest of orig string
+      strcat(replaced, str);
+    }
+
+  } else { // no replacements needed, just copy original string
+    strcpy(replaced, str);
+  }
+
+  return replaced;
 }

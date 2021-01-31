@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "debug.h"
+#include "execute.h"
 #include "parse.h"
 
 int main(int argc, char *argv[]) {
@@ -11,6 +13,7 @@ int main(int argc, char *argv[]) {
   size_t line_length = 0;
 
   int want_exit = 0;
+  int exitstatus = 0;
 
   while (!want_exit && printf(": ") &&
          getline(&line, &line_length, stdin) != -1) {
@@ -33,15 +36,37 @@ int main(int argc, char *argv[]) {
     }
 
     // parse line
-    struct Command *cmd = parse_command(line);
+    struct Command *cmd = parse_command(trimmed);
 
-    // execute command
+    // dbg_print_cmd(cmd);
+
+    // handle builtins
+    switch (builtin_command(cmd)) {
+    case 1:; // status
+      printf("exit value %i\n", exitstatus);
+      break;
+
+    case 2:; // cd
+      if (cmd->argc > 1) {
+        chdir(cmd->argv[1]);
+      } else {
+        chdir(getenv("HOME"));
+      }
+      break;
+
+    case 3: // exit
+      want_exit = 1;
+      break;
+
+    default: // not a builtin
+      exitstatus = execute_command(cmd);
+    }
 
     // cleanup
     free_command(cmd);
     free(trimmed);
   }
 
-  dbg_printf("\n  > bye\n");
+  // dbg_printf("  > bye\n");
   free(line);
 }
