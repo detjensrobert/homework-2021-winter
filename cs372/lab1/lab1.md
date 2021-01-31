@@ -4,72 +4,122 @@
 
 ---
 
-### 1. List 3 different protocols that appear in the protocol column in the unfiltered packet-listing window.
+### 1. What is the IP address and TCP port number used by the client computer (source) that is transferring the file to gaia.cs.umass.edu?
 
-- `DNS`
-- `TCP`
-- `TLSv1.3`
+`192.168.1.102:1161`
 
-### 2.How long did it take from when the HTTP GET message was sent until the HTTP OK reply was received?
+![](https://i.imgur.com/K1KC5wv.png)
 
-Ping was 0.08305s.
+### 2. What is the IP address of gaia.cs.umass.edu? On what port number is it sending and receiving TCP segments for this connection?
 
-### 3.What is the IP of `gaia.cs.umass.edu`?  What is the IP of your computer?
+`128.119.245.12:80`
 
-`gaia.cs.umass.edu`: `128.119.245.12`
+![](https://i.imgur.com/4ENBQMV.png)
 
-Local computer: `192.168.0.102`
+### 3. What is the IP address and TCP port number used by *your* client computer (source) to transfer the file to gaia.cs.umass.edu?
 
-### 4.Print the two HTTP messages (GET and OK) referred to in question 2.
+`192.168.0.102:44842`
 
-```http
-Frame 64: 478 bytes on wire (3824 bits), 478 bytes captured (3824 bits) on interface eno1, id 0
-Ethernet II, Src: Giga-Byt_a7:49:3b (b4:2e:99:a7:49:3b), Dst: Tp-LinkT_7b:f5:41 (98:da:c4:7b:f5:41)
-Internet Protocol Version 4, Src: 192.168.0.102, Dst: 128.119.245.12
-Transmission Control Protocol, Src Port: 56650, Dst Port: 80, Seq: 1, Ack: 1, Len: 412
-Hypertext Transfer Protocol
-    GET /wireshark-labs/INTRO-wireshark-file1.html HTTP/1.1\r\n
-    Host: gaia.cs.umass.edu\r\n
-    User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0\r\n
-    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n
-    Accept-Language: en-US,en;q=0.5\r\n
-    Accept-Encoding: gzip, deflate\r\n
-    Connection: keep-alive\r\n
-    Upgrade-Insecure-Requests: 1\r\n
-    Pragma: no-cache\r\n
-    Cache-Control: no-cache\r\n
-    \r\n
-    [Full request URI: http://gaia.cs.umass.edu/wireshark-labs/INTRO-wireshark-file1.html]
-    [HTTP request 1/2]
-    [Response in frame: 66]
-    [Next request in frame: 68]
-```
+![](https://i.imgur.com/7pEEtrW.png)
 
 $\pagebreak$
 
-```http
-Frame 66: 504 bytes on wire (4032 bits), 504 bytes captured (4032 bits) on interface eno1, id 0
-Ethernet II, Src: Tp-LinkT_7b:f5:41 (98:da:c4:7b:f5:41), Dst: Giga-Byt_a7:49:3b (b4:2e:99:a7:49:3b)
-Internet Protocol Version 4, Src: 128.119.245.12, Dst: 192.168.0.102
-Transmission Control Protocol, Src Port: 80, Dst Port: 56650, Seq: 1, Ack: 413, Len: 438
-Hypertext Transfer Protocol
-    HTTP/1.1 200 OK\r\n
-    Date: Wed, 06 Jan 2021 00:01:48 GMT\r\n
-    Server: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.13 mod_perl/2.0.11 Perl/v5.16.3\r\n
-    Last-Modified: Tue, 05 Jan 2021 06:59:01 GMT\r\n
-    ETag: "51-5b821bdcffcaa"\r\n
-    Accept-Ranges: bytes\r\n
-    Content-Length: 81\r\n
-    Keep-Alive: timeout=5, max=100\r\n
-    Connection: Keep-Alive\r\n
-    Content-Type: text/html; charset=UTF-8\r\n
-    \r\n
-    [HTTP response 1/2]
-    [Time since request: 0.083059701 seconds]
-    [Request in frame: 64]
-    [Next request in frame: 68]
-    [Next response in frame: 69]
-    [Request URI: http://gaia.cs.umass.edu/wireshark-labs/INTRO-wireshark-file1.html]
-    File Data: 81 bytes
-    Line-based text data: text/html (3 lines)
-```
+### 4. What is the sequence number of the TCP SYN segment that is used to initiate the TCP connection between the client computer and gaia.cs.umass.edu? What is it in the segment that identifies the segment as a SYN segment?
+
+Sequence number 0; the SYN flag is set.
+
+![](https://i.imgur.com/GRKKjzW.png){ height=300px }
+
+### 5. What is the sequence number of the SYNACK segment sent by gaia.cs.umass.edu to the client computer in reply to the SYN? What is the value of the Acknowledgement field in the SYNACK segment? How did gaia.cs.umass.edu determine that value? What is it in the segment that identifies the segment as a SYNACK segment?
+
+Sequence number 0; ACK number 1; the server has recieved 1 SYN packet, thus ACK number of 1; both SYN and ACK flags are set.
+
+![](https://i.imgur.com/63xqFiB.png){ height=300px }
+
+### 6. What is the sequence number of the TCP segment containing the HTTP POST command?
+
+Sequence number 1.
+
+![](https://i.imgur.com/NkICnlk.png){ height=200px }
+
+### 7. Consider the TCP segment containing the HTTP POST as the first segment in the TCP connection.
+
+- What are the sequence numbers of the first six segments in the TCP connection (including the segment containing the HTTP POST)? At what time was each segment sent?
+
+  ![](https://i.imgur.com/IvHwOlc.png)
+
+- When was the ACK for each segment received?
+
+  ![](https://i.imgur.com/jmFiMzG.png)
+
+  $\pagebreak$
+
+- Given the difference between when each TCP segment was sent, and when its acknowledgement was received, what is the RTT value for each of the six segments?
+
+  | sent     | ack      | RTT      |
+  |----------|----------|----------|
+  | 0.041737 | 0.026477 | 0.015260 |
+  | 0.053937 | 0.041737 | 0.012200 |
+  | 0.077294 | 0.054026 | 0.023268 |
+  | 0.124085 | 0.054690 | 0.069395 |
+  | 0.169118 | 0.077405 | 0.091713 |
+  | 0.217299 | 0.078157 | 0.139142 |
+
+- What is the Estimated RTT value after the receipt of each ACK?
+
+  | RTT estimate |
+  |--------------|
+  | 0.015260     |
+  | 0.014878     |
+  | 0.015926     |
+  | 0.022610     |
+  | 0.031248     |
+  | 0.044735     |
+
+### 8. What is the length of each of the first six TCP segments?
+
+565 for the initial segment, 1460 for the following ones.
+
+![](https://i.imgur.com/L3IAjhg.png)
+
+### 9. What is the minimum amount of available buffer space advertised at the received for the entire trace? Does the lack of receiver buffer space ever throttle the sender?
+
+1750; no, it does not throttle.
+
+![](https://i.imgur.com/k1h10eS.png)
+
+$\pagebreak$
+
+### 10. Are there any retransmitted segments in the trace file? What did you check for (in the trace) in order to answer this question?
+
+No retransmitted segments.
+
+![](https://i.imgur.com/Of3grey.png)
+
+### 11. How much data does the receiver typically acknowledge in an ACK? Can you identify cases where the receiver is ACKing every other received segment?
+
+Typical data length is 1460B; some data packets are shorter but most are 1460.
+
+![](https://i.imgur.com/PO4juG2.png)
+
+### 12. What is the throughput (bytes transferred per unit time) for the TCP connection? Explain how you calculated this value.
+
+Average throughput is 249 Kbps.
+
+![](https://i.imgur.com/aW9ZswJ.png)
+
+### 13. Can you identify where TCP’s slowstart phase begins and ends, and where congestion avoidance takes over?
+
+Slow start is in the highlighted area, congestion avoidance is active for the rest of the connection.
+
+![](https://i.imgur.com/vttwPM3.png){ height=250px }
+
+### 14. Answer each of two questions above for the trace that you have gathered when you transferred a file from your computer to `gaia.cs.umass.edu`.
+
+Average throughput is 3.21 Mbps.
+
+![](https://i.imgur.com/b5YV9mv.png)
+
+There does not appear to be a slow-start with this connection.
+
+![](https://i.imgur.com/aKmsHQA.png){ height=250px }
