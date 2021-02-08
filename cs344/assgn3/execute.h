@@ -2,6 +2,7 @@
 #define EXECUTE
 
 #include "parse.h"
+#include "set.h"
 
 /**
   Returns whether the command is a builtin.
@@ -12,20 +13,27 @@
 int builtin_command(struct Command *cmd);
 
 /**
+  Prints message to stdout based on `exitstatus`.
+  @param  exitstatus  the status returned by waitpid()
+  @return nothing, prints to stdout
+*/
+void builtin_status(int exitstatus);
+
+/**
   Executes the command detailed by `cmd`.
 
   @param  cmd   command to execute
   @return the exit status of cmd
 */
-int execute_command(struct Command *cmd);
+int execute_command(struct Command *cmd, Set *bg_pids);
+
+int execute_child(struct Command *cmd);
+int execute_parent(struct Command *cmd, int child_pid, Set *bg_pids);
 
 /**
-  Validates the given command:
-  - input file exists (if set)
-
-  @param  cmd   command to validate
-  @return 1 (true) if passed, 0 (false) if failed
+  Iterates over the given list of children to check status of.
+  Also prints any signal messages.
 */
-int validate_command(struct Command *cmd);
+int check_children(Set *bg_pids);
 
 #endif

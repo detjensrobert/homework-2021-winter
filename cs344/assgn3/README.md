@@ -1,11 +1,11 @@
-# CS 344 Assignment 2
+# CS 344 Assignment 3
 
 ## Robert Detjens
 
 ---
 
-Compiling and running this assignment:
+To compile and run this assignment:
 
 ```bash
-make && ./movies 'path/to/movies/file.csv'
+make && ./smallsh
 ```
