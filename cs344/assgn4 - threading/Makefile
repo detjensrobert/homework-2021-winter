@@ -8,4 +8,4 @@ $(OUTFILE): $(wildcard *.c) $(wildcard *.h)
 
 .PHONY: clean
 clean:
-	rm -rf $(OUTFILE)
+	rm -rf $(OUTFILE) $(wildcard vgcore.*)

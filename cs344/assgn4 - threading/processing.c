@@ -12,14 +12,9 @@ char* get_input() {
 
   input_size = getline(&input, &input_size, stdin);
 
-  if (input_size == -1) {
+  if (input_size == -1) { // catch EOF, etc
     perror("getline()");
     exit(1);
-  }
-
-  if (!strcmp(input, "STOP\n")) {
-    free(input);
-    input = NULL;
   }
 
   return input;

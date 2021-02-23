@@ -1,5 +1,5 @@
 #include "processing.h"
-#include "string_helpers.h"
+#include "threads.h"
 
 void single_threaded() {
   char *input;
@@ -12,7 +12,9 @@ void single_threaded() {
 }
 
 int main(int argc, char **argv) {
-  single_threaded();
+  // single_threaded();
+
+  multi_threaded();
 
   return 0;
 }
