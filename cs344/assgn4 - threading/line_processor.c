@@ -1,13 +1,15 @@
 #include "processing.h"
+#include "string.h"
 #include "threads.h"
 
 void single_threaded() {
-  char *input;
+  char *input = get_input();
 
-  while ((input = get_input())) {
+  while (strcmp(input, "STOP\n")) {
     char *replaced = replace_separators(input);
     char *plussed = replace_plusses(replaced);
     print_output(plussed);
+    input = get_input();
   }
 }
 

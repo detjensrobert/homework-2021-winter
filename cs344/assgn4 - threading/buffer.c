@@ -21,7 +21,7 @@ void buffer_put_line(struct buffer *b, char *line) {
   pthread_mutex_lock(&b->mutex);  // lock buffer
 
   // add line to buffer while locked
-  strncpy(b->buffer[b->prod_idx], line, BUFFER_LENGTH);
+  strncpy(b->buffer[b->prod_idx], line, BUFFER_LENGTH - 1);
   b->prod_idx++;
   b->count++;
 
@@ -42,9 +42,8 @@ char *buffer_get_line(struct buffer *b) {
   }
 
   // extract line from buffer
-  // line = malloc(BUFFER_LENGTH * sizeof(char));
-  // strncpy(line, b->buffer[b->prod_idx], BUFFER_LENGTH);
-  line = b->buffer[b->prod_idx];
+  line = malloc(BUFFER_LENGTH * sizeof(char));
+  strncpy(line, b->buffer[b->cons_idx], BUFFER_LENGTH - 1);
   b->cons_idx++;
   b->count--;
 

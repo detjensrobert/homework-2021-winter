@@ -12,7 +12,7 @@ char* get_input() {
 
   input_size = getline(&input, &input_size, stdin);
 
-  if (input_size == -1) { // catch EOF, etc
+  if (input_size == -1) {  // catch EOF, etc
     perror("getline()");
     exit(1);
   }
