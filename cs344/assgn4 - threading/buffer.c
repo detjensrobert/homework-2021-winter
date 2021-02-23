@@ -42,8 +42,9 @@ char *buffer_get_line(struct buffer *b) {
   }
 
   // extract line from buffer
-  line = calloc(BUFFER_LENGTH, sizeof(char));
-  strncpy(line, b->buffer[b->prod_idx], BUFFER_LENGTH);
+  // line = malloc(BUFFER_LENGTH * sizeof(char));
+  // strncpy(line, b->buffer[b->prod_idx], BUFFER_LENGTH);
+  line = b->buffer[b->prod_idx];
   b->cons_idx++;
   b->count--;
 

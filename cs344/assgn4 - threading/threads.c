@@ -17,9 +17,9 @@ void multi_threaded() {
   buffer23 = buffer_create();
   buffer34 = buffer_create();
 
-  buffer12.name = "[inp->sep]";
-  buffer23.name = "[sep->pls]";
-  buffer34.name = "[pls->out]";
+  buffer12.name = "\x1B[31m[inp->\x1B[33msep]\x1B[0m";
+  buffer23.name = "\x1B[33m[sep->\x1B[34mpls]\x1B[0m";
+  buffer34.name = "\x1B[34m[pls->\x1B[32mout]\x1B[0m";
 
   pthread_t input_t, separator_t, plus_t, print_t;
 
