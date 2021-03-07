@@ -9,3 +9,9 @@ To compile all programs:
 ```bash
 make all
 ```
+
+To run test script:
+
+```bash
+make test
+```
