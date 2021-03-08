@@ -8,34 +8,39 @@ POINTS=0
 
 #Make sure we have the right number of arguments
 if test $# -gt 3 -o $# -lt 2; then
-  echo "USAGE: $0 [--no-color] <enc-port> <dec-port>" 1>&2
+  echo "USAGE: $0 <enc-port> <dec-port> [--no-color]" 1>&2
   exit 1
-fi
-
-COLORS=1
-
-if [ $1 = "--no-color" ]; then
-  shift
-  COLORS=0
 fi
 
 #Record the ports passed in
 ENC_PORT=$1
 DEC_PORT=$2
 
-if [ $COLORS -eq 1 ]; then
-  # ANSI color codes for colorful output
-  RESTORE=$(echo -en '\033[0m')
+# ANSI color codes for colorful output
+RESTORE=$(echo -en '\033[0m')
 
-  RED=$(echo -en '\033[00;31m')
-  GREEN=$(echo -en '\033[00;32m')
-  BLUE=$(echo -en '\033[00;34m')
-  CYAN=$(echo -en '\033[00;36m')
-  WHITE=$(echo -en '\033[00;37m')
-  GREY=$(echo -en '\033[01;30m')
-  BYELLOW=$(echo -en '\033[01;33m')
-  BBLUE=$(echo -en '\033[01;34m')
-  BWHITE=$(echo -en '\033[01;37m')
+RED=$(echo -en '\033[00;31m')
+GREEN=$(echo -en '\033[00;32m')
+BLUE=$(echo -en '\033[00;34m')
+CYAN=$(echo -en '\033[00;36m')
+WHITE=$(echo -en '\033[00;37m')
+GREY=$(echo -en '\033[01;30m')
+BYELLOW=$(echo -en '\033[01;33m')
+BBLUE=$(echo -en '\033[01;34m')
+BWHITE=$(echo -en '\033[01;37m')
+
+if [ $3 = "--no-color" ]; then
+  RESTORE=''
+
+  RED=''
+  GREEN=''
+  BLUE=''
+  CYAN=''
+  WHITE=''
+  GREY=''
+  BYELLOW=''
+  BBLUE=''
+  BWHITE=''
 fi
 
 header() { echo "${BWHITE}$*"; }
@@ -207,8 +212,8 @@ else
   bad "no error thrown"
 fi
 
-info "- waiting 2s for programs to complete"
-sleep 2
+info "- waiting for programs to complete"
+wait $( jobs -l | grep enc_client | cut -d' ' -f 2 )
 
 header "20 POINTS: are correct ciphertexts generated with concurrent encryption?"
 ALLMATCH=1
@@ -230,8 +235,9 @@ $BIN_DIR/dec_client ciphertext1 key70000 $DEC_PORT >plaintext1_a &
 $BIN_DIR/dec_client ciphertext2 key70000 $DEC_PORT >plaintext2_a &
 $BIN_DIR/dec_client ciphertext3 key70000 $DEC_PORT >plaintext3_a &
 $BIN_DIR/dec_client ciphertext4 key70000 $DEC_PORT >plaintext4_a &
-info "- waiting 2s for programs to complete"
-sleep 2
+
+info "- waiting for programs to complete"
+wait -f $( jobs -l | grep dec_client | cut -d' ' -f 2 )
 
 header "15 POINTS: are correct output files generated with concurrent decryption?"
 ALLMATCH=1
