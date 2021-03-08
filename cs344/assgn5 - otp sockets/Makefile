@@ -29,4 +29,4 @@ format:
 .ONESHELL:
 test:
 	cd test
-	bash ./test-script.sh $$RANDOM $$RANDOM
+	bash ./p5testscript-improved.sh $$(( $$RANDOM % 10000 + 50000 )) $$(( $$RANDOM % 10000 + 50000 ))

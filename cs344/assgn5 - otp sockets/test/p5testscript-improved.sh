@@ -80,15 +80,6 @@ fi
 
 info "- generating key70000"
 $BIN_DIR/keygen 70000 >key70000
-header "5 POINTS: does key70000 exist?"
-[ -s key70000 ] || rm -f key70000 # remove if empty
-if [ -f key70000 ]; then
-  good "key70000 exists"
-  POINTS=$((POINTS + 5))
-else
-  bad "key70000 does not exist"
-fi
-
 header "5 POINTS: is size of key70000 70001?"
 if [ $(stat -c '%s' key70000) -eq 70001 ]; then
   good "key70000 has correct length"
@@ -129,11 +120,11 @@ else
 fi
 
 header "10 POINTS: is size of ciphertext1 same as plaintext1?"
-if [ $(wc -m <ciphertext1) -eq $(wc -m <plaintext1) ]; then
+if [ $(stat -c '%s' ciphertext1) -eq $(stat -c '%s' plaintext1) ]; then
   good "ciphertext1 has correct length"
   POINTS=$((POINTS + 10))
 else
-  bad "ciphertext1 has length $(wc -m <ciphertext1), should be $(wc -m <plaintext1)"
+  bad "ciphertext1 has length $(stat -c '%s' ciphertext1), should be $(stat -c '%s' plaintext1)"
 fi
 
 header "5 POINTS: does ciphertext1 look encrypted? ${BYELLOW}Double check manually!"
@@ -216,7 +207,7 @@ for f in text{1,2,3,4}; do
   if [ $(stat -c '%s' "cipher$f") -ne $(stat -c '%s' "plain$f") ]; then
     bad "size of cipher$f does not match plain$f"
     restore
-    stat -c '%n %s' "cipher$f" "plain$f" | column -t
+    stat -c '%n %s' "plain$f" "cipher$f" | column -t
     ALLMATCH=0
   fi
 done
@@ -233,8 +224,7 @@ $BIN_DIR/dec_client ciphertext4 key70000 $DEC_PORT >plaintext4_a &
 info "- waiting 2s for programs to complete"
 sleep 2
 
-header "20 POINTS: are correct output files generated with concurrent decryption?"
-# ls -plA plaintext* | awk '{print $9 " " $5}' | column -t
+header "15 POINTS: are correct output files generated with concurrent decryption?"
 ALLMATCH=1
 for f in plaintext{1,2,3,4}; do
   cmp -s "$f" "${f}_a"
@@ -247,9 +237,9 @@ for f in plaintext{1,2,3,4}; do
 done
 if [ $ALLMATCH -eq 1 ]; then
   good "decrypted text matches original"
-  POINTS=$((POINTS + 20))
+  POINTS=$((POINTS + 15))
 fi
 
 cleanup
-header "TOTAL SCORE: ${BBLUE}$POINTS $WHITE/ 160"
+header "TOTAL SCORE: ${BBLUE}$POINTS $WHITE/ 150"
 restore
