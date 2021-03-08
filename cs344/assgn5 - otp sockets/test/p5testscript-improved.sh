@@ -29,7 +29,7 @@ BYELLOW=$(echo -en '\033[01;33m')
 BBLUE=$(echo -en '\033[01;34m')
 BWHITE=$(echo -en '\033[01;37m')
 
-if [ $3 = "--no-color" ]; then
+if [ $3 -a $3 = "--no-color" ]; then
   RESTORE=''
 
   RED=''
