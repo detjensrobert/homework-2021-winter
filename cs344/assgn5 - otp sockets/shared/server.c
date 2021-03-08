@@ -11,6 +11,7 @@
 
 #include "debug.h"
 #include "otp.h"
+#include "socket.h"
 
 int start_server(char *type, int port) {
   struct sockaddr_in client_addr;
@@ -111,8 +112,8 @@ void handle_connection(int socket_fd, char *accepted_type) {
   char *input = calloc(payload_size, sizeof(char));
   char *key = calloc(payload_size, sizeof(char));
 
-  recv(socket_fd, input, payload_size, 0);
-  recv(socket_fd, key, payload_size, 0);
+  recv_full(socket_fd, input, payload_size, 0);
+  recv_full(socket_fd, key, payload_size, 0);
 
   dbg_printf("SERVER: input: '%s'\n", input);
   dbg_printf("SERVER: key  : '%s'\n", key);

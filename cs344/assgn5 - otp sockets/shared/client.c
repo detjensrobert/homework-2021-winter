@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "debug.h"
+#include "socket.h"
 
 int start_client(char *type, char *input, char *key, size_t input_size,
                  int port) {
@@ -45,12 +46,14 @@ int start_client(char *type, char *input, char *key, size_t input_size,
   }
 
   send(connection_socket, &input_size, sizeof(size_t), 0);
-  send(connection_socket, input, input_size, 0);
-  send(connection_socket, key, input_size, 0);
+
+  send_full(connection_socket, input, input_size, 0);
+
+  send_full(connection_socket, key, input_size, 0);
 
   // get result back from server and print it
-  char *result = calloc(input_size + 1, sizeof(char));
-  recv(connection_socket, result, input_size, 0);
+  char *result = calloc(input_size, sizeof(char));
+  recv_full(connection_socket, result, input_size, 0);
   printf("%s\n", result);
   free(result);
 
