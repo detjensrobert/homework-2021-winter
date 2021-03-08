@@ -7,31 +7,40 @@ BIN_DIR=..
 POINTS=0
 
 #Make sure we have the right number of arguments
-if test $# -gt 2 -o $# -lt 2; then
-  echo "USAGE: $0 <enc-port> <dec-port>" 1>&2
+if test $# -gt 3 -o $# -lt 2; then
+  echo "USAGE: $0 [--no-color] <enc-port> <dec-port>" 1>&2
   exit 1
+fi
+
+COLORS=1
+
+if [ $1 = "--no-color" ]; then
+  shift
+  COLORS=0
 fi
 
 #Record the ports passed in
 ENC_PORT=$1
 DEC_PORT=$2
 
-# ANSI color codes for colorful output
-RESTORE=$(echo -en '\033[0m')
+if [ $COLORS -eq 1 ]; then
+  # ANSI color codes for colorful output
+  RESTORE=$(echo -en '\033[0m')
 
-RED=$(echo -en '\033[00;31m')
-GREEN=$(echo -en '\033[00;32m')
-BLUE=$(echo -en '\033[00;34m')
-CYAN=$(echo -en '\033[00;36m')
-WHITE=$(echo -en '\033[00;37m')
-GREY=$(echo -en '\033[01;30m')
-BYELLOW=$(echo -en '\033[01;33m')
-BBLUE=$(echo -en '\033[01;34m')
-BWHITE=$(echo -en '\033[01;37m')
+  RED=$(echo -en '\033[00;31m')
+  GREEN=$(echo -en '\033[00;32m')
+  BLUE=$(echo -en '\033[00;34m')
+  CYAN=$(echo -en '\033[00;36m')
+  WHITE=$(echo -en '\033[00;37m')
+  GREY=$(echo -en '\033[01;30m')
+  BYELLOW=$(echo -en '\033[01;33m')
+  BBLUE=$(echo -en '\033[01;34m')
+  BWHITE=$(echo -en '\033[01;37m')
+fi
 
 header() { echo "${BWHITE}$*"; }
-good() { echo "${GREEN}YES: $*"; }
-bad() { echo "${RED}NO: $*"; }
+good() { echo "${GREEN}  YES: $*"; }
+bad() { echo "${RED}  NO: $*"; }
 warn() { echo "${BYELLOW}$*"; }
 info() { echo "${GREY}  $*"; }
 restore() { echo -n $RESTORE; }
