@@ -2,7 +2,11 @@
 
 # If test stuff is under a different dir from the binaries (e.g. test/),
 # set BIN_DIR to relative path from script to binaries (e.g. ..)
-BIN_DIR=..
+BIN_DIR=.
+if [ ! -e $BIN_DIR/enc_server ]; then
+  # try going up a dir if binaries not found
+  BIN_DIR=..
+fi
 
 POINTS=0
 
@@ -63,6 +67,12 @@ cleanup() {
   rm -f key20
   rm -f key70000
 }
+
+if [ ! -e $BIN_DIR/enc_server ]; then
+  echo "${RED}ERR: cannot find binaries!"
+  restore
+  exit 1
+fi
 
 header "== CS344 Program 5 Grading Script =="
 
