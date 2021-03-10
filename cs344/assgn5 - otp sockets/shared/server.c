@@ -66,11 +66,9 @@ int start_server(char *type, int port) {
         close(connection_socket);
 
         // clean up any zombie children
-        pid_t child_pid;
         int child_status = 0;
-        do {
-          child_pid = waitpid(-1, &child_status, WNOHANG);
-        } while (child_pid > 0);
+        while (waitpid(-1, &child_status, WNOHANG))
+          ;
         break;
     }
   }

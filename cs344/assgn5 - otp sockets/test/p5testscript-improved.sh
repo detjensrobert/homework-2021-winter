@@ -20,39 +20,40 @@ fi
 ENC_PORT=$1
 DEC_PORT=$2
 
-# ANSI color codes for colorful output
-RESTORE=$(echo -en '\033[0m')
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
 
-RED=$(echo -en '\033[00;31m')
-GREEN=$(echo -en '\033[00;32m')
-BLUE=$(echo -en '\033[00;34m')
-CYAN=$(echo -en '\033[00;36m')
-WHITE=$(echo -en '\033[00;37m')
-GREY=$(echo -en '\033[01;30m')
-BYELLOW=$(echo -en '\033[01;33m')
-BBLUE=$(echo -en '\033[01;34m')
-BWHITE=$(echo -en '\033[01;37m')
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+GREY="$(tput setaf 8)"
 
 if [ $3 -a $3 = "--no-color" ]; then
-  RESTORE=''
+  BOLD=''
+  RESET=''
 
+  BLACK=''
   RED=''
   GREEN=''
+  YELLOW=''
   BLUE=''
+  MAGENTA=''
   CYAN=''
   WHITE=''
   GREY=''
-  BYELLOW=''
-  BBLUE=''
-  BWHITE=''
 fi
 
-header() { echo "${BWHITE}$*"; }
+header() { echo "${BOLD}${WHITE}$*${RESET}"; }
 good() { echo "${GREEN}  YES: $*"; }
 bad() { echo "${RED}  NO: $*"; }
-warn() { echo "${BYELLOW}$*"; }
+warn() { echo "${YELLOW}$*"; }
 info() { echo "${GREY}  $*"; }
-restore() { echo -n $RESTORE; }
+reset() { echo -n $RESET; }
 
 cleanup() {
   info "- killing any running servers (ignore not permitted errors)"
@@ -70,7 +71,7 @@ cleanup() {
 
 if [ ! -e $BIN_DIR/enc_server ]; then
   echo "${RED}ERR: cannot find binaries!"
-  restore
+  reset
   exit 1
 fi
 
@@ -113,7 +114,7 @@ else
 fi
 
 header "10 POINTS: error given about short key?"
-restore
+reset
 $BIN_DIR/enc_client plaintext1 key20 $ENC_PORT
 if [ $? -eq 1 ]; then
   good "error reported"
@@ -122,7 +123,7 @@ else
   bad "no error thrown"
 fi
 
-header "20 POINTS: returns encrypted text? ${BYELLOW}Double check manually!"
+header "20 POINTS: returns encrypted text? ${YELLOW}Double check manually!"
 echo -n $BLUE
 $BIN_DIR/enc_client plaintext1 key70000 $ENC_PORT
 if [ $? -eq 0 ]; then
@@ -151,7 +152,7 @@ else
   bad "ciphertext1 has length $(stat -c '%s' ciphertext1), should be $(stat -c '%s' plaintext1)"
 fi
 
-header "5 POINTS: does ciphertext1 look encrypted? ${BYELLOW}Double check manually!"
+header "5 POINTS: does ciphertext1 look encrypted? ${YELLOW}Double check manually!"
 echo -n $BLUE
 cat ciphertext1
 if [ $? -eq 0 ]; then
@@ -162,7 +163,7 @@ else
 fi
 
 header "5 POINTS: dec -> enc invalid connection reported?"
-restore
+reset
 $BIN_DIR/dec_client ciphertext1 key70000 $ENC_PORT
 if [ $? -eq 2 ]; then
   good "error reported"
@@ -224,13 +225,14 @@ fi
 
 info "- waiting for programs to complete"
 wait $( jobs -l | grep enc_client | cut -d' ' -f 2 )
+sleep 1
 
 header "20 POINTS: are correct ciphertexts generated with concurrent encryption?"
 ALLMATCH=1
 for f in text{1,2,3,4}; do
   if [ $(stat -c '%s' "cipher$f") -ne $(stat -c '%s' "plain$f") ]; then
     bad "size of cipher$f does not match plain$f"
-    restore
+    reset
     stat -c '%n %s' "plain$f" "cipher$f" | column -t
     ALLMATCH=0
   fi
@@ -255,7 +257,7 @@ for f in plaintext{1,2,3,4}; do
   cmp -s "$f" "${f}_a"
   if [ $? -ne 0 ]; then
     bad "${f}_a does not match ${f}"
-    restore
+    reset
     stat -c '%n %s' "$f" "${f}_a" | column -t
     ALLMATCH=0
   fi
@@ -266,5 +268,5 @@ if [ $ALLMATCH -eq 1 ]; then
 fi
 
 cleanup
-header "TOTAL SCORE: ${BBLUE}$POINTS $WHITE/ 150"
-restore
+header "TOTAL SCORE: ${BLUE}$POINTS $WHITE/ 150"
+reset

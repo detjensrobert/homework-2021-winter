@@ -6,6 +6,9 @@ OUTFILE = smallsh
 smallsh: $(wildcard *.c) $(wildcard *.h)
 	$(CC) $(ARGS) -o $(OUTFILE) $(wildcard *.c)
 
-.PHONY: clean
+.PHONY: clean test
 clean:
 	rm -rf $(OUTFILE) junk junk2 $(wildcard vgcore.*) $(wildcard ~/testdir*)
+
+test:
+	bash p3testscript.sh

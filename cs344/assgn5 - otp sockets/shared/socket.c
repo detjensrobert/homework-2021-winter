@@ -16,7 +16,8 @@ ssize_t send_full(int socket, char *buffer, size_t length, int flags) {
     dbg_printf("  sending %i bytes out of %zu total...\n",
                min(length - total_sent, CHUNK_SIZE), length);
 
-    ssize_t bytes_sent = send(socket, current, min(length - total_sent, CHUNK_SIZE), 0);
+    ssize_t bytes_sent =
+        send(socket, current, min(length - total_sent, CHUNK_SIZE), 0);
     total_sent += bytes_sent;
     current += bytes_sent;
   } while (total_sent < length);
