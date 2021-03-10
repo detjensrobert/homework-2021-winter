@@ -51,17 +51,14 @@ header() { echo "${WHITE}${@:2} ${BLUE}($1 pts)"; }
 pass() { echo "${GREEN}  PASS"; }
 fail() { echo "${RED}  FAIL: $*"; }
 warn() { echo "${YELLOW}$*"; }
-info() {
-  echo
-  echo "${WHITE}$*"
-}
+info() { echo "${WHITE}$*"; }
 
 cleanup() { rm -rf junk* smallsh-test-dir; }
 
 # run arguments in smallsh and remove any prompts from output
 smallsh() {
-  echo -n "$GREY" > /dev/tty
-  echo -e "$@\nexit" | $BIN_DIR/smallsh | sed 's/: //g'
+  echo -n "$GREY" >/dev/tty
+  echo -e "$@\nexit" | $BIN_DIR/smallsh | sed -E 's/: ?//g'
 }
 
 title "CS344 Program 3 Grading Script"
@@ -110,12 +107,14 @@ fi
 
 header 10 "input and output redirection"
 smallsh "wc < junk > junk2"
-cmp -s <(wc <junk) <(smallsh cat junk2)
+cmp -s <(wc <junk) junk2
 if [ $? -eq 0 ]; then
   pass "file exists and content is correct"
   POINTS=$((POINTS + 10))
 else
-  [ -f junk ] || fail "file does not exist" && ([ -s junk ] && fail "contents do not match" || fail "file is empty")
+  fail "contents do not match"
+  restore
+  diff -u <(wc <junk) junk2
 fi
 
 header 10 "status command"
@@ -126,6 +125,7 @@ if [ $OUTPUT -eq 1 ]; then
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
+  info "was $OUTPUT, expected 1"
 fi
 
 header 10 "input redirection with nonexistent file"
@@ -136,6 +136,7 @@ if [ $OUTPUT -eq 1 ]; then
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
+  info "was $OUTPUT, expected 1"
 fi
 
 header 10 "nonexistent command"
@@ -146,58 +147,69 @@ if [ $OUTPUT -eq 1 ]; then
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
+  info "was $OUTPUT, expected 1"
 fi
 
 header 10 "background command PID on creation"
-OUTPUT=$(smallsh "sleep 100 &
-pidof sleep" | grep -oP '\d+') # extract pids from output string
-OUTPUT=($OUTPUT)               # convert string to array
-if [ ${OUTPUT[0]} -eq ${OUTPUT[1]} ]; then
+OUTPUT=$(smallsh "sleep 10 &
+pgrep -u $USER sleep")
+PIDS=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
+if [[ ${PIDS[0]} =~ "${PIDS[1]}" ]]; then
   pass "background pid correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "pid not reported"
+  info "was ${PIDS[0]} (smallsh), expected ${PIDS[1]} (pgrep)"
+  info "output: $OUTPUT"
 fi
 
-OUTPUT=$(smallsh "sleep 100 &
+OUTPUT=$(smallsh "sleep 10 &
 sleep 1
-pkill sleep" | grep -oP '\d+') # extract pids from output string
-OUTPUT=($OUTPUT)               # convert string to array
+pkill -u $USER sleep")
+PIDS=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
 
 header 10 "background command PID on termination"
-if [ ${OUTPUT[0]} -eq ${OUTPUT[1]} ]; then
+if [ ${PIDS[0]} -eq ${PIDS[1]} ]; then
   pass "background pid correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "pid not reported"
+  info "was ${PIDS[0]} (smallsh), expected ${PIDS[1]} (pkill)"
+  info "output: $OUTPUT"
 fi
 
 header 10 "background command termination signal"
-if [ ${OUTPUT[2]} -eq 15 ]; then
+if [ ${PIDS[2]} -eq 15 ]; then
   pass "termination signal correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "signal not reported"
+  info "was ${PIDS[2]}, expected 15"
+  info "output: $OUTPUT"
 fi
 
 OUTPUT=$(smallsh "sleep 1 &
-sleep 2" | grep -oP '\d+') # extract pids from output string
-OUTPUT=($OUTPUT)           # convert string to array
+sleep 2")
+PIDS=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
 
 header 10 "background command PID on completion"
-if ([ ${OUTPUT[0]} -eq ${OUTPUT[1]} ] && [ ${OUTPUT[2]} -eq 0 ]); then
-  pass "background pid and exit status correctly reported"
+if ([ ${PIDS[0]} -eq ${PIDS[1]} ]); then
+  pass "background pid correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "pid not reported"
+  info "was ${PIDS[0]} (creation), expected ${PIDS[1]} (completion)"
+  info "output: $OUTPUT"
 fi
 
 header 10 "background command exit code"
-if ([ ${OUTPUT[2]} -eq 0 ]); then
+if ([ ${PIDS[2]} -eq 0 ]); then
   pass "exit status correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "exit status not reported"
+  info "was ${PIDS[2]}, expected 0"
+  info "output: $OUTPUT"
 fi
 
 header 5 "implicit cd to homedir"
@@ -208,6 +220,7 @@ if [ "$OUTPUT" = "$HOME" ]; then
   POINTS=$((POINTS + 5))
 else
   fail "not in home directory"
+  info "was $OUTPUT, expected $HOME"
 fi
 
 header 5 "cd to homedir"
@@ -219,6 +232,7 @@ if [ "$OUTPUT" = "$PWD/smallsh-test-dir" ]; then
   POINTS=$((POINTS + 5))
 else
   fail "not in correct directory"
+  info "was $OUTPUT, expected $PWD/smallsh-test-dir"
 fi
 
 header 5 "pid variable replacement"
@@ -230,22 +244,25 @@ if [ $! = $(cat junk3) ]; then
   POINTS=$((POINTS + 5))
 else
   [ $(cat junk3) = '$$' ] && fail "pid var was not replaced" || fail "replacement does not match correct pid"
+  info "was $(cat junk3), expected $!"
 fi
 
 header 20 "foreground-only mode"
-OUTPUT=$(smallsh 'kill -SIGTSTP $$
+OUTPUT=$(smallsh 'echo test
+kill -SIGTSTP $$
 date +%s
 sleep 2 &
 date +%s
-kill -SIGTSTP $$' | grep -oP '\d+') # extract times from output string
-OUTPUT=($OUTPUT)                    # convert string to array
-if [ ${OUTPUT[0]} = $(( ${OUTPUT[1]} - 2 )) ]; then
+kill -SIGTSTP $$')
+TIMES=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
+if [ ${TIMES[0]} = $((${TIMES[1]} - 2)) ]; then
   pass "times are correctly 2 seconds apart"
   POINTS=$((POINTS + 20))
 else
   fail "times are not 2 seconds apart"
+  info "was ${TIMES[0]} and ${TIMES[1]}"
+  info "output: $OUTPUT"
 fi
-
 
 title "FINAL SCORE: ${BLUE}${POINTS}${WHITE} / 170"
 
