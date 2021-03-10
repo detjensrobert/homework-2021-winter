@@ -11,4 +11,4 @@ clean:
 	rm -rf $(OUTFILE) junk junk2 $(wildcard vgcore.*) $(wildcard ~/testdir*)
 
 test:
-	bash p3testscript.sh
+	bash p3testscript-improved.sh

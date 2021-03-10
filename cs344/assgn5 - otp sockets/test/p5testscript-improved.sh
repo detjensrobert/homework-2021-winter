@@ -224,7 +224,7 @@ else
 fi
 
 info "- waiting for programs to complete"
-wait $( jobs -l | grep enc_client | cut -d' ' -f 2 )
+wait $( jobs -l | grep enc_client | awk '{ print $2 }' )
 sleep 1
 
 header "20 POINTS: are correct ciphertexts generated with concurrent encryption?"
@@ -249,7 +249,8 @@ $BIN_DIR/dec_client ciphertext3 key70000 $DEC_PORT >plaintext3_a &
 $BIN_DIR/dec_client ciphertext4 key70000 $DEC_PORT >plaintext4_a &
 
 info "- waiting for programs to complete"
-wait $( jobs -l | grep dec_client | cut -d' ' -f 2 )
+wait $( jobs -l | grep dec_client | awk '{ print $2 }' )
+sleep 1
 
 header "15 POINTS: are correct output files generated with concurrent decryption?"
 ALLMATCH=1
