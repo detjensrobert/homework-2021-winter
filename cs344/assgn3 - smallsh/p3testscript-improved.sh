@@ -57,7 +57,6 @@ cleanup() { rm -rf junk* smallsh-test-dir; }
 
 # run arguments in smallsh and remove any prompts from output
 smallsh() {
-  echo -n "$GREY" >/dev/tty
   echo -e "$@\nexit" | $BIN_DIR/smallsh | sed -E 's/: ?//g'
 }
 
@@ -67,6 +66,7 @@ cleanup
 
 header 5 "comments"
 smallsh "# i am a comment
+
 #so am i" | grep -qP '.+' # /.+/ regex matches any output
 if [ $? -eq 1 ]; then
   pass "comments are not printed"
@@ -76,39 +76,38 @@ else
 fi
 
 header 10 "command execution"
-cmp -s <(ls) <(smallsh ls)
-if [ $? -eq 0 ]; then
+if cmp -s <(ls) <(smallsh ls); then
   pass "executed successfully"
   POINTS=$((POINTS + 10))
 else
   fail "listing does not match"
+  diff -u <(ls) <(smallsh ls)
 fi
 
 header 15 "output redirection"
 smallsh "ls > junk"
-cmp -s <(ls) <(smallsh cat junk)
-if [ $? -eq 0 ]; then
+if cmp -s <(ls) <(smallsh cat junk); then
   pass "file exists and content is correct"
   POINTS=$((POINTS + 15))
 else
   [ -f junk ] || fail "file does not exist" && (
     [ -s junk ] && fail "contents do not match" || fail "file is empty"
   )
+  diff -u <(ls) <(smallsh ls)
 fi
 
 header 15 "input redirection"
-cmp -s <(wc <junk) <(smallsh "wc < junk")
-if [ $? -eq 0 ]; then
+if cmp -s <(wc <junk) <(smallsh "wc < junk"); then
   pass "output is correct"
   POINTS=$((POINTS + 15))
 else
   fail "output does not match"
+  diff -u <(wc <junk) <(smallsh "wc < junk")
 fi
 
 header 10 "input and output redirection"
 smallsh "wc < junk > junk2"
-cmp -s <(wc <junk) junk2
-if [ $? -eq 0 ]; then
+if cmp -s <(wc <junk) junk2; then
   pass "file exists and content is correct"
   POINTS=$((POINTS + 10))
 else
@@ -119,47 +118,47 @@ fi
 
 header 10 "status command"
 OUTPUT=$(smallsh "test -f badfile
-status &" | grep -oP '\d+')
-if [ $OUTPUT -eq 1 ]; then
+status &")
+if [ $(echo "$OUTPUT" | grep -oP '\d+') -eq 1 ]; then
   pass "error status correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
-  info "was $OUTPUT, expected 1"
+  info "expected '$OUTPUT' to match 1"
 fi
 
 header 10 "input redirection with nonexistent file"
 OUTPUT=$(smallsh "wc < badfile
-status &" | grep -oP '\d+')
-if [ $OUTPUT -eq 1 ]; then
+status &")
+if [ $(echo "$OUTPUT" | grep -oP '\d+') -eq 1 ]; then
   pass "error status correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
-  info "was $OUTPUT, expected 1"
+  info "expected '$OUTPUT' to match 1"
 fi
 
 header 10 "nonexistent command"
 OUTPUT=$(smallsh "badcmd
-status &" | grep -oP '\d+')
-if [ $OUTPUT -eq 1 ]; then
+status &")
+if [ $(echo "$OUTPUT" | grep -oP '\d+') -eq 1 ]; then
   pass "error status correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "status not reported"
-  info "was $OUTPUT, expected 1"
+  info "expected '$OUTPUT' to match 1"
 fi
 
 header 10 "background command PID on creation"
 OUTPUT=$(smallsh "sleep 10 &
 pgrep -u $USER sleep")
-PIDS=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
-if [[ ${PIDS[0]} =~ "${PIDS[1]}" ]]; then
+PIDS=($(echo $OUTPUT | grep -oP '\d+'))           # convert string to array
+if [[ " ${PIDS[@]:1} " =~ " ${PIDS[0]} " ]]; then # is sleep command pid (0) in list of pids (1..)?
   pass "background pid correctly reported"
   POINTS=$((POINTS + 10))
 else
   fail "pid not reported"
-  info "was ${PIDS[0]} (smallsh), expected ${PIDS[1]} (pgrep)"
+  info "expected ${PIDS[0]} (smallsh) to match pgrep"
   info "output: $OUTPUT"
 fi
 
@@ -193,7 +192,7 @@ sleep 2")
 PIDS=($(echo $OUTPUT | grep -oP '\d+')) # convert string to array
 
 header 10 "background command PID on completion"
-if ([ ${PIDS[0]} -eq ${PIDS[1]} ]); then
+if [ ${PIDS[0]} -eq ${PIDS[1]} ]; then
   pass "background pid correctly reported"
   POINTS=$((POINTS + 10))
 else
@@ -203,7 +202,7 @@ else
 fi
 
 header 10 "background command exit code"
-if ([ ${PIDS[2]} -eq 0 ]); then
+if [ ${PIDS[2]} -eq 0 ]; then
   pass "exit status correctly reported"
   POINTS=$((POINTS + 10))
 else
