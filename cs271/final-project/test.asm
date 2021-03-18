@@ -6,6 +6,9 @@ msg_key			BYTE   	"efbcdghijklmnopqrstuvwxyza"
 message			BYTE   	"the contents of this message will be a mystery.",0
 dest				DWORD		0
 
+foo 				WORD 		10
+bar 				WORD 		25
+
 .CODE
 
 main PROC
@@ -34,8 +37,8 @@ main PROC
 	call 					Crlf
 
 	mov 					dest, 0
-	push 					10
-	push 					25
+	push 					foo
+	push 					bar
 	push					OFFSET dest
 	call 					compute
 
