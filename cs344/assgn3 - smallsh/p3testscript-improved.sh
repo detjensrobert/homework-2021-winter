@@ -8,7 +8,7 @@ fi
 
 POINTS=0
 
-if test $# -gt 1; then
+if [ $# -gt 1 -o "$1" == "-h" ]; then
   echo "USAGE: $0 [--no-color]" 1>&2
   exit 1
 fi
@@ -26,7 +26,7 @@ CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
 GREY="$(tput setaf 8)"
 
-if [ $1 -a $1 = "--no-color" ]; then
+if [ "$1" == "--no-color" ]; then
   BOLD=''
   RESET=''
 
@@ -80,8 +80,8 @@ if cmp -s <(ls) <(smallsh ls); then
   pass "executed successfully"
   POINTS=$((POINTS + 10))
 else
-  fail "listing does not match"
-  diff -u <(ls) <(smallsh ls)
+  fail "listing does not match expected"
+  diff -uN <(ls) <(smallsh ls) | sed 's/^/    /' | tail -n +4
 fi
 
 header 15 "output redirection"
@@ -90,19 +90,26 @@ if cmp -s <(ls) <(smallsh cat junk); then
   pass "file exists and content is correct"
   POINTS=$((POINTS + 15))
 else
-  [ -f junk ] || fail "file does not exist" && (
-    [ -s junk ] && fail "contents do not match" || fail "file is empty"
-  )
-  diff -u <(ls) <(smallsh ls)
+  [ -f junk ] || fail "file does not exist"
+  [ -f junk ] || [ -s junk ] && fail "file is empty"
+  [ -s junk ] && fail "contents do not match"
+
+  echo "    diff:"
+  diff -uN <(ls) <(smallsh ls) | sed 's/^/    /' | tail -n +4
 fi
+
+# ensure file exists
+[ -z junk ] || ls > junk
 
 header 15 "input redirection"
 if cmp -s <(wc <junk) <(smallsh "wc < junk"); then
   pass "output is correct"
   POINTS=$((POINTS + 15))
 else
-  fail "output does not match"
-  diff -u <(wc <junk) <(smallsh "wc < junk")
+  fail "output does not match expected"
+
+  echo "    diff:"
+  diff -uN <(wc <junk) <(smallsh "wc < junk") | sed 's/^/    /' | tail -n +4
 fi
 
 header 10 "input and output redirection"
@@ -112,8 +119,9 @@ if cmp -s <(wc <junk) junk2; then
   POINTS=$((POINTS + 10))
 else
   fail "contents do not match"
-  restore
-  diff -u <(wc <junk) junk2
+
+  echo "    diff:"
+  diff -uN <(wc <junk) junk2 | sed 's/^/    /' | tail -n +4
 fi
 
 header 10 "status command"
@@ -235,7 +243,7 @@ else
 fi
 
 header 5 "pid variable replacement"
-# run smallsh manually here to get true pid (instead of others in the function)
+# run smallsh manually here to get true pid (instead of others in the `smallsh` function chain)
 echo -e 'echo $$ > junk3\nexit' | $BIN_DIR/smallsh >/dev/null &
 wait $!
 if [ $! = $(cat junk3) ]; then
