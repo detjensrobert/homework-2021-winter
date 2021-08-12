@@ -20,7 +20,7 @@ https://reberhardt.com/blog/programming/2016/01/30/masm-on-mac-or-linux.html).
 2. Install MASM:
 
    ```bash
-   wget http://website.assemblercode.com/masm32/masm32v11r.zip
+   wget http://masm32.masmcode.com/masm32/masm32v11r.zip
    unzip masm32v11r.zip
    wine_masm install.exe
    ```
