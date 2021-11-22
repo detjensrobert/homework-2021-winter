@@ -54,13 +54,25 @@ title() {
   echo "${BOLD}${WHITE}$*${restore}"
   echo
 }
-header() { echo "${WHITE}${@:2} ${BLUE}($1 pts)"; }
-pass() { echo "${GREEN}  PASS"; }
-fail() { echo "${RED}  FAIL: $*"; }
-warn() { echo "${YELLOW}$*"; }
+header() {
+  echo "${WHITE}${@:2} ${BLUE}($1 pts)"
+  restore
+}
+pass() {
+  echo "${GREEN}  PASS"
+  restore
+}
+fail() {
+  echo "${RED}  FAIL: $*"
+  restore
+}
+warn() {
+  echo "${YELLOW}$*"
+  restore
+}
 info() {
-  echo "${GREY}$*";
-  # echo -n
+  echo "${GREY}$*"
+  restore
 }
 
 cleanup() {
@@ -234,7 +246,7 @@ else
 fi
 
 info "- waiting for programs to complete"
-wait $( jobs -l | grep enc_client | awk '{ print $2 }' )
+wait $(jobs -l | grep enc_client | awk '{ print $2 }')
 sleep 1
 
 header 20 "are correct ciphertexts generated with concurrent encryption?"
@@ -259,7 +271,7 @@ $BIN_DIR/dec_client ciphertext3 key70000 $DEC_PORT >plaintext3_a &
 $BIN_DIR/dec_client ciphertext4 key70000 $DEC_PORT >plaintext4_a &
 
 info "- waiting for programs to complete"
-wait $( jobs -l | grep dec_client | awk '{ print $2 }' )
+wait $(jobs -l | grep dec_client | awk '{ print $2 }')
 sleep 1
 
 header 15 "are correct output files generated with concurrent decryption?"

@@ -27,6 +27,11 @@ format:
 	clang-format -i $(wildcard shared/*.c) $(wildcard shared/*.h) $(wildcard *.c) --style=Google
 
 .ONESHELL:
-test:
+test: all
 	cd test
 	bash ./p5testscript-improved.sh $$(( $$RANDOM % 10000 + 50000 )) $$(( $$RANDOM % 10000 + 50000 ))
+
+.ONESHELL:
+test-old: all
+	cd test
+	bash ./p5testscript.sh $$(( $$RANDOM % 10000 + 50000 )) $$(( $$RANDOM % 10000 + 50000 ))

@@ -62,8 +62,8 @@ int execute_command(struct Command *cmd, Set *bg_pids) {
 int execute_child(struct Command *cmd) {
   // set bg processes to /dev/null by default
   if (cmd->bg) {
-    cmd->infile = cmd->infile ? cmd->infile : "/dev/null";
-    cmd->outfile = cmd->outfile ? cmd->outfile : "/dev/null";
+    cmd->infile = cmd->infile ?: "/dev/null";
+    cmd->outfile = cmd->outfile ?: "/dev/null";
   } else {
     // if not a bg process, use default SIGINT handler
     // (SIGINT ignored by default from parent process)
