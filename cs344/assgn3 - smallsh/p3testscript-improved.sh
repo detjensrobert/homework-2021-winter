@@ -24,7 +24,7 @@ BLUE=$(tput setaf 4)
 MAGENTA=$(tput setaf 5)
 CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
-GREY="$(tput setaf 8)"
+GREY=$(tput setaf 8)
 
 if [ "$1" == "--no-color" ]; then
   BOLD=''
@@ -47,8 +47,8 @@ title() {
   echo "${BOLD}${WHITE}$*${RESET}"
   echo
 }
-header() { echo "${WHITE}${@:2} ${BLUE}($1 pts)"; }
-pass() { echo "${GREEN}  PASS"; }
+header() { echo; echo "${WHITE}${@:2} ${BLUE}($1 pts)"; }
+pass() { echo "${GREEN}  PASS ${GREY}$*"; }
 fail() { echo "${RED}  FAIL: $*"; }
 warn() { echo "${YELLOW}$*"; }
 info() { echo "${WHITE}$*"; }
