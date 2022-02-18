@@ -12,7 +12,7 @@ bibliography: term-paper.bib
 csl: apa.csl
 ---
 
-$\vspace{\fill}$
+\vspace{\fill}
 
 # Introduction
 
@@ -23,9 +23,9 @@ fossil-fuel vehicles, the manufacturing backbone for creating these products is 
 paper will explore the true environmental cost of producing clean energy products with a focus on electric vehicles and
 rare earth metals.
 
-$\vspace{\fill}$
+\vspace{\fill}
 
-$\pagebreak$
+\pagebreak
 
 ## Why are rare earth metals used in electric vehicles?
 
@@ -93,7 +93,7 @@ will decrease and eventually go down (Figure 3) [@Silvestri2021]. New recycling 
 achieving upwards of 90% reclamation. However, there needs to be recyclers implementing these techniques. There are few
 large-scale recyclers willing to reclaim spent NiMH batteries.
 
-$\vspace{\fill}$
+\vspace{\fill}
 
 # Conclusion
 
@@ -103,16 +103,16 @@ favor of other technologies, but demand for rare earths will continue to be high
 reclaiming rare earths from existing batteries and regulating illegal mines to reduce the environmental impact, electric
 vehicles can be made cleaner and live up the the expectation of being truly green.
 
-$\vspace{\fill}$
+\vspace{\fill}
 
-$\pagebreak$
+\pagebreak
 
 # References
 
 ::: {#refs}
 :::
 
-$\vspace{\fill}$
+\vspace{\fill}
 
 # Figures
 
